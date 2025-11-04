@@ -105,6 +105,9 @@ struct FirstView: View {
                 ForEach(tasksArray) { task in
                     Text(task.taskItem)
                 }
+                // リストの削除時の処理を設定 // <<< 変更・追加箇所 2
+                                .onDelete(perform: deleteRow)
+                
                 // リストの並び替え時の処理を設定
                 .onMove(perform: { from, to in
                     replaceRow(from, to)
@@ -126,5 +129,15 @@ struct FirstView: View {
             tasksData = encodedArray // エンコードできたらAppStorageに渡す(保存・更新)
         }
     }
-    
+    // 削除処理と削除後の保存 // <<< 変更・追加箇所 1
+        func deleteRow(offsets: IndexSet) {
+            // 配列から指定されたインデックスの要素を削除
+            tasksArray.remove(atOffsets: offsets)
+            
+            // 削除後の配列をエンコードしてAppStorageに保存・更新
+            if let encodedArray = try? JSONEncoder().encode(tasksArray) {
+                tasksData = encodedArray
+            }
+        }
 }
+
